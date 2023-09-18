@@ -1,16 +1,10 @@
 export default class BoardWithDwarf {
-  constructor() {
-    this.container = null;
-    this.boardEl = null;
-    this.points = null;
+  constructor(container) {
+    this.container = document.querySelector(container);
+    this.boardEl = this.container.querySelector('.board');
+    this.points = this.container.querySelector('.points');
     this.boardSize = 4;
     this.cells = [];
-
-    this.calcPoints = this.calcPoints.bind(this);
-  }
-
-  bindToContainer(container) {
-    this.container = document.querySelector(container);
   }
 
   startDrawing() {
@@ -19,8 +13,6 @@ export default class BoardWithDwarf {
   }
 
   drawPoints() {
-    this.points = this.container.querySelector('.points');
-
     this.points.innerHTML = `
       <div class="points__player">
         Игрок: <span class="points__player-number">0</span>
@@ -29,15 +21,11 @@ export default class BoardWithDwarf {
         Гном: <span class="points__dwarf-number">0</span>
       </div>
     `;
-
     this.playerPoints = this.points.querySelector('.points__player-number');
     this.dwarfPoints = this.points.querySelector('.points__dwarf-number');
   }
 
   drawBoard() {
-    this.boardEl = this.container.querySelector('.board');
-    this.boardEl.addEventListener('click', this.calcPoints);
-
     for (let i = 0; i < this.boardSize ** 2; i++) {
       const cellEl = document.createElement('div');
       cellEl.classList.add('board__cell', 'cell');
@@ -45,16 +33,6 @@ export default class BoardWithDwarf {
     }
 
     this.cells = Array.from(this.boardEl.children);
-  }
-
-  calcPoints(e) {
-    const dwarf = e.target.closest('.dwarf');
-    if (dwarf) {
-      this.playerPoints.textContent++;
-      dwarf.classList.add('dwarf_hidden');
-    } else if (++this.dwarfPoints.textContent >= 5) {
-      this.showPopup('Вы проиграли.');
-    }
   }
 
   showPopup(text) {
