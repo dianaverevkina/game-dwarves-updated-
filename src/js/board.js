@@ -1,26 +1,16 @@
 export default class BoardWithDwarf {
-  constructor(container) {
-    this.container = document.querySelector(container);
-    this.boardEl = this.container.querySelector('.board');
-    this.points = this.container.querySelector('.points');
+  constructor() {
+    this.container = null;
+    this.boardEl = null;
+    this.points = null;
     this.boardSize = 4;
     this.cells = [];
 
     this.calcPoints = this.calcPoints.bind(this);
-
-    this.boardEl.addEventListener('click', this.calcPoints);
   }
 
-  calcPoints(e) {
-    const dwarf = e.target.closest('.dwarf');
-    if (dwarf) {
-      this.playerPoints.textContent++;
-      dwarf.classList.add('dwarf_hidden');
-    } else if (++this.dwarfPoints.textContent >= 5) {
-      alert('Вы проиграли');
-      this.playerPoints.textContent = 0;
-      this.dwarfPoints.textContent = 0;
-    }
+  bindToContainer(container) {
+    this.container = document.querySelector(container);
   }
 
   startDrawing() {
@@ -29,6 +19,8 @@ export default class BoardWithDwarf {
   }
 
   drawPoints() {
+    this.points = this.container.querySelector('.points');
+
     this.points.innerHTML = `
       <div class="points__player">
         Игрок: <span class="points__player-number">0</span>
@@ -43,6 +35,9 @@ export default class BoardWithDwarf {
   }
 
   drawBoard() {
+    this.boardEl = this.container.querySelector('.board');
+    this.boardEl.addEventListener('click', this.calcPoints);
+
     for (let i = 0; i < this.boardSize ** 2; i++) {
       const cellEl = document.createElement('div');
       cellEl.classList.add('board__cell', 'cell');
@@ -50,5 +45,44 @@ export default class BoardWithDwarf {
     }
 
     this.cells = Array.from(this.boardEl.children);
+  }
+
+  calcPoints(e) {
+    const dwarf = e.target.closest('.dwarf');
+    if (dwarf) {
+      this.playerPoints.textContent++;
+      dwarf.classList.add('dwarf_hidden');
+    } else if (++this.dwarfPoints.textContent >= 5) {
+      this.showPopup('Вы проиграли.');
+    }
+  }
+
+  showPopup(text) {
+    this.popUp = document.createElement('div');
+    this.popUp.classList.add('popup');
+    this.popUp.innerHTML = `
+      <div class="popup__container">
+        <div class='popup__close'>
+          <img src='./images/cross.svg' class='popup__close-img'>
+        </div>
+        <p class='popup__text'>${text}</p>
+      </div>
+    `;
+    this.container.append(this.popUp);
+
+    this.popUpClose = this.popUp.querySelector('.popup__close');
+    this.addEventForClose();
+  }
+
+  addEventForClose() {
+    this.popUpClose.addEventListener('click', () => {
+      this.popUp.remove();
+      this.resetPoints();
+    });
+  }
+
+  resetPoints() {
+    this.playerPoints.textContent = 0;
+    this.dwarfPoints.textContent = 0;
   }
 }

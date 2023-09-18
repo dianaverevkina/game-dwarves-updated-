@@ -1,4 +1,4 @@
-export default class gamePlay {
+export default class DwarfMoving {
   constructor(board) {
     this.board = board;
     this.dwarf = null;
